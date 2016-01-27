@@ -66,7 +66,7 @@ class PModAD2:
 				self.drawText(str(self.data[i]), 100, 20 + 30 * i)
 				self.drawText('', 150, 20 + 30 * i)
 			elif selected_mode == 1:
-				data = self.data[i] / 4096.0 * 100
+				data = self.data[i] / 4095.0 * 100
 				text = "{0:.3f}".format(round(data, 3))
 				self.drawText(text, 100, 20 + 30 * i)
 				if data > 10:
@@ -74,11 +74,11 @@ class PModAD2:
 				else:
 					self.drawText('%', 140, 20 + 30 * i)
 			elif selected_mode == 2:
-				text = "{0:.4f}".format(round(self.data[i] / 4096.0 * voltage_range, 4))
+				text = "{0:.4f}".format(round(self.data[i] / 4095.0 * voltage_range, 4))
 				self.drawText(text, 100, 20 + 30 * i)
 				self.drawText('V', 150, 20 + 30 * i)
 			elif selected_mode == 3:
-				data = self.data[i] / 4096.0 * resistance_range
+				data = self.data[i] / 4095.0 * resistance_range
 				if data < 10000:
 					text = "{0:.1f}".format(round(data, 1))
 					self.drawText(text, 100, 20 + 30 * i)
@@ -144,7 +144,7 @@ class PModAD2:
 			#Frame 12
 			#bit 8:1 - Data bit 8:1
 			self.data[channel] = ((buf[0] & 0x0F) << 8) + buf[1]
-			#data = data / 4096;
+			#data = data / 4095;
 			#print "Channel %02d Data: %.2f\n" % (channel + 1, data);
 				
 	def main(self):
