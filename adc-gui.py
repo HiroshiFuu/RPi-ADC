@@ -58,6 +58,7 @@ class PModAD2:
 		self.ButtonVoltage.create_button(self.screen, (30,30,254), 190, 300, 80, 30, 18, "Voltage", (255,255,255))
 		self.ButtonResistance.create_button(self.screen, (212,154,0), 280, 300, 80, 30, 18, "Resistance", (255,255,255))
 		self.Exit.create_button(self.screen, (87,160,70), 400, 300, 60, 30, 20, "Exit", (255,255,255))
+		
 		self.readI2C();
 		for i in range(4):
 			self.drawText("Channel " + str(i + 1) + " : ", 10, 20 + 30 * i)
@@ -87,7 +88,6 @@ class PModAD2:
 					self.drawText(text, 100, 20 + 30 * i)
 					self.drawText('k' + u'\u03A9', 160, 20 + 30 * i)
 					
-			
 		pygame.display.update()
 		
 	def drawText(self, text, x, y, color=TEXTCOLOR):
@@ -114,8 +114,8 @@ class PModAD2:
 				elif self.ButtonResistance.pressed(pygame.mouse.get_pos()):
 					selected_mode = 3
 		
-	def openI2C(self):
-		global f_handler, I2C_SLAVE, address
+	def readI2C(self):
+		global f_handler, I2C_SLAVE, address, buf
 		
 		#Open I2C bus and acquire access
 		try:
@@ -125,11 +125,7 @@ class PModAD2:
 			print e
 			pygame.quit()
 			sys.exit()
-					
-	def readI2C(self):
-		global f_handler, buf
 		
-		self.openI2C()
 		for i in range(4):
 			rb = f_handler.read(2)
 			if len(rb) != 2:
