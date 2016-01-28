@@ -136,11 +136,13 @@ class PModAD2:
 		
 		self.openI2C()
 		
-		cmd = [0b00000100]			# D7 to D4 : CH3 to CH0
-									# D3 : REF_SEL (default 0)
-									# D2 : FLTR (default 1)
-									# D1 : Bit trial delay (default 0)
-									# D0 : Sample delay (default 0)
+		# D7 to D4 : CH3 to CH0
+		# D3 : REF_SEL (default 0)
+		# D2 : FLTR (default 1)
+		# D1 : Bit trial delay (default 0)
+		# D0 : Sample delay (default 0)
+		cmd = [0b00000100]
+		
 		if channel == 0:
 			mask = 0b11110000;
 		else:

@@ -1,0 +1,7 @@
+[Calibration]
+DateCali=
+DateVeri=
+
+[Settings]
+Unit=grams
+MaxErrAllowed=2
