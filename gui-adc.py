@@ -6,7 +6,7 @@ from pygame.locals import *
 import sys
 import Buttons
 
-I2C_SLAVE = 0x0703		# I2C slave address
+I2C_SLAVE = 0x0703	color	# I2C slave address
 address = 0b0101000		# I2C device address
 f_handler = None		# file handler
 buf = [0, 0]			# read buffer
@@ -21,7 +21,6 @@ GREEN		= 	(  0, 255,   0)
 RED			=	(255, 	0,	 0)
 
 SCREENCOLOR = BLACK
-CROPINGRECTLINECOLOR = GREEN
 TEXTCOLOR = WHITE
 
 selected_mode = 0
@@ -40,6 +39,7 @@ class PModAD2:
 		self.screen = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT), 0, 32)
 		pygame.display.set_caption('PModAD2 ADC')
 		pygame.font.init()
+		
 		self.font = pygame.font.Font('freesansbold.ttf', 16)
 		self.ButtonRaw = Buttons.Button()
 		self.ButtonPercentage = Buttons.Button()
