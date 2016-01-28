@@ -8,11 +8,20 @@ buf = [0, 0]
 
 #Open I2C bus and acquire access
 try:
-	f = open("/dev/i2c-1", 'r')
+	f = open("/dev/i2c-1", 'r+b')
 	fcntl.ioctl(f, I2C_SLAVE, address)
 except Exception as e:
 	print e
 	exit()
+
+if True:
+	cmd = [0b11110100]			# D7 to D4 : CH3 to CH0
+								# D3 : REF_SEL (default 0)
+								# D2 : FLTR (default 1)
+								# D1 : Bit trial delay (default 0)
+								# D0 : Sample delay (default 0)
+	cmd = bytearray(cmd)
+	f.write(cmd)
 
 for i in range(4):
 	rb = f.read(2)
