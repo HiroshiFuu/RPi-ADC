@@ -6,7 +6,7 @@ from pygame.locals import *
 import sys
 import Buttons
 
-I2C_SLAVE = 0x0703	color	# I2C slave address
+I2C_SLAVE = 0x0703		# I2C slave address
 address = 0b0101000		# I2C device address
 f_handler = None		# file handler
 buf = [0, 0]			# read buffer
@@ -116,18 +116,43 @@ class PModAD2:
 					selected_mode = 2
 				elif self.ButtonResistance.pressed(pygame.mouse.get_pos()):
 					selected_mode = 3
-		
-	def readI2C(self):
-		global f_handler, I2C_SLAVE, address, buf
+	
+	def openI2C(self):
+		global f_handler, I2C_SLAVE, address
 		
 		#Open I2C bus and acquire access
 		try:
-			f_handler = open("/dev/i2c-1", 'r')
+			f_handler = open("/dev/i2c-1", 'r+b')
 			fcntl.ioctl(f_handler, I2C_SLAVE, address)
 		except Exception as e:
 			print e
 			pygame.quit()
 			sys.exit()
+			
+	# channel : 1 to 4 for channel 1 to 4
+	# channel : 0 for all channels
+	def setChannelRead(self, channel):
+		global f_handler
+		
+		self.openI2C()
+		
+		cmd = [0b00000100]			# D7 to D4 : CH3 to CH0
+									# D3 : REF_SEL (default 0)
+									# D2 : FLTR (default 1)
+									# D1 : Bit trial delay (default 0)
+									# D0 : Sample delay (default 0)
+		if channel == 0:
+			mask = 0b11110000;
+		else:
+			mask = 0b00001000 << channel
+		cmd[0] |= mask
+		cmd = bytearray(cmd)
+		f_handler.write(cmd)
+		
+	def readI2C(self):
+		global f_handler, buf
+		
+		self.openI2C()
 		
 		for i in range(4):
 			rb = f_handler.read(2)
@@ -153,6 +178,7 @@ class PModAD2:
 	def main(self):
 		self.display()
 		clock = pygame.time.Clock()
+		self.setChannelRead(0)
 		while True:
 			clock.tick(3)
 			self.update_display()
