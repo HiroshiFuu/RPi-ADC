@@ -112,6 +112,22 @@ class PModAD2:
 				elif self.ButtonResistance.pressed(pygame.mouse.get_pos()):
 					selected_mode = 3
 		
+	# channel : 1 to 4 for channel 1 to 4
+	# channel : 0 for all channels
+	def setChannelRead(self, channel):
+		cmd = [0b00000100]			# D7 to D4 : CH3 to CH0
+									# D3 : REF_SEL (default 0)
+									# D2 : FLTR (default 1)
+									# D1 : Bit trial delay (default 0)
+									# D0 : Sample delay (default 0)
+		if channel == 0:
+			mask = 0b11110000;
+		else:
+			mask = 0b00001000 << channel
+		cmd |= mask
+		cmd = bytearray(cmd)
+		f.write(cmd)
+	
 	def readI2C(self):
 		global f_handler, I2C_SLAVE, address, buf
 		
