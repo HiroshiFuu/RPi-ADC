@@ -54,10 +54,10 @@ class PModAD2:
 		self.screen.fill(SCREENCOLOR)
 		
 		self.ButtonRaw.create_button(self.screen, (65,65,65), 10, 300, 80, 30, 18, "Raw Value", (255,255,255))
-		self.ButtonPercentage.create_button(self.screen, (254,63,30), 100, 300, 80, 30, 18, "Percentage", (255,255,255))
+		self.ButtonPercentage.create_button(self.screen, (87,160,70), 100, 300, 80, 30, 18, "Percentage", (255,255,255))
 		self.ButtonVoltage.create_button(self.screen, (30,30,254), 190, 300, 80, 30, 18, "Voltage", (255,255,255))
 		self.ButtonResistance.create_button(self.screen, (212,154,0), 280, 300, 80, 30, 18, "Resistance", (255,255,255))
-		self.Exit.create_button(self.screen, (87,160,70), 400, 300, 60, 30, 20, "Exit", (255,255,255))
+		self.Exit.create_button(self.screen, (254,63,30), 400, 300, 60, 30, 20, "Exit", (255,255,255))
 		
 		self.readI2C();
 		for i in range(4):
@@ -82,7 +82,10 @@ class PModAD2:
 				if data < 10000:
 					text = "{0:.1f}".format(round(data, 1))
 					self.drawText(text, 100, 20 + 30 * i)
-					self.drawText(u'\u03A9', 150, 20 + 30 * i)
+					if data == 0:
+						self.drawText(u'\u03A9', 125, 20 + 30 * i)
+					else:
+						self.drawText(u'\u03A9', 150, 20 + 30 * i)
 				else:
 					text = "{0:.4f}".format(round(data / 1000, 4))
 					self.drawText(text, 100, 20 + 30 * i)
@@ -148,10 +151,10 @@ class PModAD2:
 			#print "Channel %02d Data: %.2f\n" % (channel + 1, data);
 				
 	def main(self):
-		clock = pygame.time.Clock()
-		clock.tick(3)
 		self.display()
+		clock = pygame.time.Clock()
 		while True:
+			clock.tick(3)
 			self.update_display()
 			self.checkForEvent()
 
