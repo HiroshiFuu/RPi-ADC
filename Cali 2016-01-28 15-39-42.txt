@@ -1,0 +1,16 @@
+[Channel 1]
+RawVal501Pt=310
+RawVal900Pt=39
+
+[Channel 2]
+RawVal501Pt=298
+RawVal900Pt=294
+
+[Channel 3]
+RawVal501Pt=458
+RawVal900Pt=457
+
+[Channel 4]
+RawVal501Pt=308
+RawVal900Pt=312
+

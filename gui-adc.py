@@ -48,6 +48,9 @@ class PModAD2:
 		self.Exit = Buttons.Button()
 		self.data = [None, None, None, None]
 		
+		self.CaliDate = None
+		self.VeriDate = None
+		
 	def update_display(self):
 		global selected_mode, voltage_range, resistance_range
 		
@@ -58,6 +61,9 @@ class PModAD2:
 		self.ButtonVoltage.create_button(self.screen, (30,30,254), 190, 300, 80, 30, 18, "Voltage", (255,255,255))
 		self.ButtonResistance.create_button(self.screen, (212,154,0), 280, 300, 80, 30, 18, "Resistance", (255,255,255))
 		self.Exit.create_button(self.screen, (254,63,30), 400, 300, 60, 30, 20, "Exit", (255,255,255))
+		
+		self.drawText("Last Calibration Date  :  " + self.CaliDate, 10, 160)
+		self.drawText("Last Verification Date :  " + self.VeriDate, 10, 180)
 		
 		self.readI2C();
 		for i in range(4):
@@ -150,6 +156,7 @@ class PModAD2:
 		cmd[0] |= mask
 		cmd = bytearray(cmd)
 		f_handler.write(cmd)
+		time.sleep(0.1)
 		
 	def readI2C(self):
 		global f_handler, buf
@@ -177,10 +184,20 @@ class PModAD2:
 			#data = data / 4095;
 			#print "Channel %02d Data: %.2f\n" % (channel + 1, data);
 				
+	def loadConfig(self):			
+		config_file = open("./config.txt", 'r')
+		lines = []
+		for i in range(7):
+			lines.append(config_file.next())
+		self.CaliDate = lines[1].replace("DateCali=", "").replace("\n", "")
+		self.VeriDate = lines[2].replace("DateVeri=", "").replace("\n", "")
+		config_file.close()
+	
 	def main(self):
 		self.display()
 		clock = pygame.time.Clock()
 		self.setChannelRead(0)
+		self.loadConfig()
 		while True:
 			clock.tick(3)
 			self.update_display()

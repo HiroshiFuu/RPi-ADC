@@ -116,7 +116,7 @@ class PModAD2:
 		if current_step == 3:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 2nd loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 2", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -129,7 +129,7 @@ class PModAD2:
 		if current_step == 4:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 2nd loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 2", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -145,7 +145,7 @@ class PModAD2:
 		if current_step == 5:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 3rd loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 3", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -158,7 +158,7 @@ class PModAD2:
 		if current_step == 6:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 3rd loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 3", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -174,7 +174,7 @@ class PModAD2:
 		if current_step == 7:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 4th loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 4", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("501g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -187,7 +187,7 @@ class PModAD2:
 		if current_step == 8:
 			self.drawText("Please place the ", 20, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 220, 50, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
-			self.drawText("weight on the 1st loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
+			self.drawText("weight on the 4th loadcell", 280, 50, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("Then press Next button to get data sensor 4", 20, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
 			self.drawText("900g", 540, 80, FONT_SIZE_MEDIUM, WEIGHTCOLOR)
 			self.drawText("point", 600, 80, FONT_SIZE_MEDIUM, PROMTEXTCOLOR)
@@ -317,6 +317,21 @@ class PModAD2:
 			cali_file.write("RawVal900Pt=" + str(self.overall_data[i][1]) + "\n")
 			cali_file.write("\n")
 		cali_file.close()
+		self.updateConfig()
+		
+	def updateConfig(self):
+		config_file = open("./config.txt", 'rw+')
+		lines = []
+		for i in range(7):
+			lines.append(config_file.next())
+		config_file.seek(0)
+		for i in range(7):
+			if i == 1:
+				config_file.write("DateCali=" + datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S") + "\n")
+			else:
+				config_file.write(lines[i])
+		config_file.close()
+			
 		
 	def main(self):
 		self.display()
