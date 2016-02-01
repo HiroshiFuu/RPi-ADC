@@ -1,5 +1,5 @@
 [Calibration]
-DateCali=2016-01-28 15-43-41
+DateCali=2016-01-28 16-07-04
 DateVeri=
 
 [Settings]
