@@ -5,7 +5,8 @@ import pygame
 from pygame.locals import *
 import sys
 import Buttons
-import pygButton
+import PygButton
+import PygInputBox
 
 I2C_SLAVE = 0x0703		# I2C slave address
 address = 0b0101000		# I2C device address
@@ -51,8 +52,10 @@ class PModAD2:
 		
 		self.CaliDate = None
 		self.VeriDate = None
+		self.MaxErr = None
 		
-		self.ButtonSetErr = pygButton.PygButton((230, 210, 45, 25), 'Set', WHITE)
+		self.ButtonSetErr = PygButton.PygButton((230, 210, 45, 25), 'Set', WHITE)
+		self.ErrInputBox = PygInputBox.PygInputBox((160, 208, 50, 30), 'Error', WHITE)
 		
 	def update_display(self):
 		global selected_mode, voltage_range, resistance_range
@@ -67,9 +70,9 @@ class PModAD2:
 		
 		self.drawText("Last Calibration Date  :  " + self.CaliDate, 10, 160)
 		self.drawText("Last Verification Date :  " + self.VeriDate, 10, 180)
-		
 		self.drawText("Max Error Allow :  ", 10, 212)
 		self.ButtonSetErr.draw(self.screen)
+		self.ErrInputBox.draw(self.screen)
 		
 		self.readI2C();
 		for i in range(4):
@@ -128,6 +131,11 @@ class PModAD2:
 					selected_mode = 2
 				elif self.ButtonResistance.pressed(pygame.mouse.get_pos()):
 					selected_mode = 3
+			elif event.type == MOUSEBUTTONUP:	
+				if 'click' in self.ErrInputBox.handleMouseEvent(event):
+					pass
+			elif event.type == KEYUP:
+				self.ErrInputBox.handleKeyEvent(event)
 	
 	def openI2C(self):
 		global f_handler, I2C_SLAVE, address
