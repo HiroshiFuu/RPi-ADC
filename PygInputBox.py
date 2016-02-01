@@ -124,7 +124,15 @@ class PygInputBox(object):
 			self._focused = False
 		elif inkey == K_BACKSPACE:
 			INPUTTEXT = INPUTTEXT[0:-1]
-		elif inkey >= 40 and inkey <= 127:
+		elif inkey >= 32 and inkey <= 127:
+			# if SHIFT key is held or CAPS key is on, append the uppercased or lowercased key
+			mods = pygame.key.get_mods()
+			if mods & KMOD_CAPS:
+				inkey -= 32
+			if mods & KMOD_SHIFT:
+				inkey -= 32
+			if mods & KMOD_SHIFT and mods & KMOD_CAPS:
+				inkey += 32 + 32
 			INPUTTEXT.append(chr(inkey))
 		self._updateInputBox(''.join(INPUTTEXT), self._focused)
 
