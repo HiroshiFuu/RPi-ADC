@@ -21,9 +21,9 @@ permitted provided that the following conditions are met:
       of conditions and the following disclaimer in the documentation and/or other materials
       provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY Al Sweigart ''AS IS'' AND ANY EXPRESS OR IMPLIED
+THIS SOFTWARE IS PROVIDED BY Feng Hao ''AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Al Sweigart OR
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Feng Hao OR
 CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
@@ -33,13 +33,13 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The views and conclusions contained in the software and documentation are those of the
 authors and should not be interpreted as representing official policies, either expressed
-or implied, of Al Sweigart.
+or implied, of Feng Hao.
 """
+
 import pygame
 from pygame.locals import *
 
 pygame.font.init()
-PygInputBox_FONT = pygame.font.Font('freesansbold.ttf', 14)
 
 BLACK     = (  0,   0,   0)
 WHITE     = (255, 255, 255)
@@ -53,17 +53,12 @@ class PygInputBox(object):
 		global INPUTTEXT
 		
 		"""Create a new inputbox object. Parameters:
-			rect - The size and position of the inputbox as a pygame.Rect object
-				or 4-tuple of integers.
+			rect - The size and position of the inputbox as a pygame. Rect object or 4-tuple of integers.
 			prompt - The prompt text on the inputbox (default is blank)
-			bgcolor - The background color of the inputbox (default is a light
-				gray color)
-			fgcolor - The foreground color (i.e. the color of the text).
-				Default is black.
-			font - The pygame.font.Font object for the font of the text.
-				Default is freesansbold in point 14.
-			highlight - A pygame.Surface object for the inputbox's appearance
-				when the mouse is over it.
+			bgcolor - The background color of the inputbox. Default is black.
+			fgcolor - The foreground color (i.e. the color of the text). Default is white.
+			font - The pygame.font.Font object for the font of the text. Default is freesansbold in point 14.
+			highlight - A pygame.Surface object for the inputbox's appearance when the it is been focused.
 		"""
 		
 		if rect is None:
@@ -77,7 +72,7 @@ class PygInputBox(object):
 		self._highlightcolor = highlightcolor
 
 		if font is None:
-			self._font = PygInputBox_FONT
+			self._font = pygame.font.Font('freesansbold.ttf', 14)
 		else:
 			self._font = font
 
@@ -91,16 +86,12 @@ class PygInputBox(object):
 
 	def handleMouseEvent(self, eventObj):
 		"""MOUSEBUTTONUP event objects created by Pygame should be passed to this method. 
-		handleMouseEvent() will detect if the event is relevant to this inputbox and change its state.
-
-		There are two ways that your code can respond to inputbox-events. One is to inherit the 
-		PygInputBox class and override the mouse*() methods. The other is to have the caller 
-		of handleMouseEvent() check the return value for the string 'click'."""
+		handleMouseEvent() will detect if the event is relevant to this inputbox and change its state."""
 		
 		global INPUTTEXT
 
 		if eventObj.type != MOUSEBUTTONUP or not self._visible:
-			# The inputbox only cares bout mouse-related events (or no events, if it is invisible)
+			# The inputbox only cares about mouse-related events (or no events, if it is invisible)
 			return []
 
 		if eventObj.type == MOUSEBUTTONUP:
@@ -108,7 +99,6 @@ class PygInputBox(object):
 				# if a mouse click happened inside the inputbox:
 				self._focused = True
 				self._updateInputBox(''.join(INPUTTEXT), self.focused)
-				self.mouseClick(eventObj)
 				return 'click'
 			elif self._focused and not self._rect.collidepoint(eventObj.pos):
 				# if a mouse click happened outside the inputbox:
@@ -119,9 +109,14 @@ class PygInputBox(object):
 
 
 	def handleKeyEvent(self, eventObj):
+		"""KEYUP event objects created by Pygame should be passed to this method. 
+		handleKeyEvent() will detect if the event is relevant to this inputbox and change its input text."""
+		
 		global INPUTTEXT
 		
 		if not self._visible or not self.focused or eventObj.type != KEYUP:
+			# The inputbox only cares about key-related events (or no events, if it is invisible)
+			# and the inputbox is currently activated.
 			return None
 			
 		inkey = eventObj.key
@@ -150,7 +145,7 @@ class PygInputBox(object):
 			
 			
 	def _updateInputBox(self, text, focused=False):
-		"""Redraw the inputbox's Surface object. Call this method when the inputbox has changed appearance."""
+		"""Redraw the inputbox's Surface object. Call this method when the inputbox has changed appearance or input text."""
 		
 		global INPUTTEXT
 		
@@ -187,10 +182,6 @@ class PygInputBox(object):
 			pygame.draw.line(self.surface, self._highlightcolor, (w - 1, 1), (w - 1, h - 1))
 			pygame.draw.line(self.surface, self._highlightcolor, (2, h - 2), (w - 2, h - 2))
 			pygame.draw.line(self.surface, self._highlightcolor, (w - 2, 2), (w - 2, h - 2))
-			
-
-	def mouseClick(self, event):
-		pass # This class is meant to be overridden.
 
 
 	def _propGetprompt(self):
@@ -207,7 +198,6 @@ class PygInputBox(object):
 
 
 	def _propSetRect(self, newRect):
-		# Note that changing the attributes of the Rect won't update the inputbox. You have to re-assign the rect member.
 		self._rect = newRect
 		self._update()
 
