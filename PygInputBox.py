@@ -46,12 +46,8 @@ WHITE     = (255, 255, 255)
 GREEN	  = (  0, 255,   0)
 RED		  =	(255, 	0,	 0)
 
-INPUTTEXT = []
-
 class PygInputBox(object):
-	def __init__(self, rect=None, prompt='', bgcolor=WHITE, fgcolor=BLACK, font=None, highlightcolor=GREEN):
-		global INPUTTEXT
-		
+	def __init__(self, rect=None, prompt='', inputtext=[], bgcolor=WHITE, fgcolor=BLACK, font=None, highlightcolor=GREEN):
 		"""Create a new inputbox object. Parameters:
 			rect - The size and position of the inputbox as a pygame. Rect object or 4-tuple of integers.
 			prompt - The prompt text on the inputbox (default is blank)
@@ -67,6 +63,7 @@ class PygInputBox(object):
 			self._rect = pygame.Rect(rect)
 
 		self._prompt = prompt
+		self._inputtext = inputtext
 		self._bgcolor = bgcolor
 		self._fgcolor = fgcolor
 		self._highlightcolor = highlightcolor
@@ -87,8 +84,6 @@ class PygInputBox(object):
 	def handleMouseEvent(self, eventObj):
 		"""MOUSEBUTTONUP event objects created by Pygame should be passed to this method. 
 		handleMouseEvent() will detect if the event is relevant to this inputbox and change its state."""
-		
-		global INPUTTEXT
 
 		if eventObj.type != MOUSEBUTTONUP or not self._visible:
 			# The inputbox only cares about mouse-related events (or no events, if it is invisible)
@@ -98,12 +93,12 @@ class PygInputBox(object):
 			if not self._focused and self._rect.collidepoint(eventObj.pos):
 				# if a mouse click happened inside the inputbox:
 				self._focused = True
-				self._updateInputBox(''.join(INPUTTEXT), self.focused)
+				self._updateInputBox(''.join(self.inputtext), self.focused)
 				return 'click'
 			elif self._focused and not self._rect.collidepoint(eventObj.pos):
 				# if a mouse click happened outside the inputbox:
 				self._focused = False
-				self._updateInputBox(''.join(INPUTTEXT), self.focused)
+				self._updateInputBox(''.join(self.inputtext), self.focused)
 
 		return []
 
@@ -112,18 +107,19 @@ class PygInputBox(object):
 		"""KEYUP event objects created by Pygame should be passed to this method. 
 		handleKeyEvent() will detect if the event is relevant to this inputbox and change its input text."""
 		
-		global INPUTTEXT
-		
 		if not self._visible or not self.focused or eventObj.type != KEYUP:
 			# The inputbox only cares about key-related events (or no events, if it is invisible)
 			# and the inputbox is currently activated.
 			return None
-			
+		
+		entered = False	# whether the return key is pressed
+		
 		inkey = eventObj.key
 		if inkey == K_RETURN:
 			self._focused = False
+			entered = True
 		elif inkey == K_BACKSPACE:
-			INPUTTEXT = INPUTTEXT[0:-1]
+			self._inputtext = self.inputtext[0:-1]
 		elif inkey >= 32 and inkey <= 127:
 			# if SHIFT key is held or CAPS key is on, append the uppercased or lowercased key
 			mods = pygame.key.get_mods()
@@ -133,8 +129,11 @@ class PygInputBox(object):
 				inkey -= 32
 			if mods & KMOD_SHIFT and mods & KMOD_CAPS:
 				inkey += 32 + 32
-			INPUTTEXT.append(chr(inkey))
-		self._updateInputBox(''.join(INPUTTEXT), self._focused)
+			self._inputtext.append(chr(inkey))
+		self._updateInputBox(''.join(self.inputtext), self._focused)
+		if entered:
+			return True
+		return False
 
 
 	def draw(self, surfaceObj):
@@ -149,13 +148,14 @@ class PygInputBox(object):
 		Call this method to draw inputbox in default appearance"""
 
 		# draw input box
-		self._updateInputBox(self.prompt)
+		if self.inputtext == []:
+			self._updateInputBox(self.prompt)
+		else:
+			self._updateInputBox(''.join(self.inputtext))
 			
 			
 	def _updateInputBox(self, text, focused=False):
 		"""Redraw the inputbox's Surface object. Call this method when the inputbox has changed appearance or input text."""
-		
-		global INPUTTEXT
 		
 		# fill background color
 		self.surface.fill(self.bgcolor)
@@ -164,7 +164,7 @@ class PygInputBox(object):
 		h = self._rect.height
 		
 		# if user didn't input anything, display the default prompt text when lost focus
-		if INPUTTEXT == [] and not focused:
+		if self.inputtext == [] and not focused:
 			text = self.prompt
 		
 		promptSurf = self._font.render(text, True, self.fgcolor, self.bgcolor)
@@ -199,6 +199,16 @@ class PygInputBox(object):
 	def _propSetprompt(self, promptText):
 		self._prompt = promptText
 		self._update()
+
+
+	def _propGetinputtext(self):
+		return self._inputtext
+
+
+	def _propSetinputtext(self, inputtext):
+		self._inputtext = inputtext
+		self._update()
+
 
 
 	def _propGetRect(self):
@@ -263,6 +273,7 @@ class PygInputBox(object):
 
 
 	prompt = property(_propGetprompt, _propSetprompt)
+	inputtext = property(_propGetinputtext, _propSetinputtext)
 	rect = property(_propGetRect, _propSetRect)
 	visible = property(_propGetVisible, _propSetVisible)
 	fgcolor = property(_propGetFgColor, _propSetFgColor)

@@ -5,6 +5,7 @@ import pygame
 from pygame.locals import *
 import sys
 import Buttons
+import PygInputBox
 
 I2C_SLAVE = 0x0703		# I2C slave address
 address = 0b0101000		# I2C device address
@@ -48,6 +49,9 @@ class PModAD2:
 		self.Exit = Buttons.Button()
 		self.data = [None, None, None, None]
 		
+		self.VoltageInputBox = PygInputBox.PygInputBox((150, 210, 60, 25), '', list(str(voltage_range)))
+		self.ResistanceInputBox = PygInputBox.PygInputBox((170, 240, 60, 25), '', list(str(resistance_range)))
+		
 	def update_display(self):
 		global selected_mode, voltage_range, resistance_range
 		
@@ -58,6 +62,11 @@ class PModAD2:
 		self.ButtonVoltage.create_button(self.screen, (30,30,254), 190, 300, 80, 30, 18, "Voltage", (255,255,255))
 		self.ButtonResistance.create_button(self.screen, (212,154,0), 280, 300, 80, 30, 18, "Resistance", (255,255,255))
 		self.Exit.create_button(self.screen, (254,63,30), 400, 300, 60, 30, 20, "Exit", (255,255,255))
+		
+		self.drawText("Voltage Range :  ", 10, 212)
+		self.drawText("Resistance Range :  ", 10, 242)
+		self.VoltageInputBox.draw(self.screen)
+		self.ResistanceInputBox.draw(self.screen)
 		
 		self.readI2C();
 		for i in range(4):
@@ -98,7 +107,7 @@ class PModAD2:
 		self.screen.blit(text, (x, y))
 			
 	def checkForEvent(self):
-		global selected_mode
+		global selected_mode, voltage_range, resistance_range
 		
 		for event in pygame.event.get(): # event handling loop
 			if event.type == pygame.QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
@@ -116,6 +125,16 @@ class PModAD2:
 					selected_mode = 2
 				elif self.ButtonResistance.pressed(pygame.mouse.get_pos()):
 					selected_mode = 3
+			elif event.type == MOUSEBUTTONUP:	
+				if 'click' in self.VoltageInputBox.handleMouseEvent(event):
+					pass
+				if 'click' in self.ResistanceInputBox.handleMouseEvent(event):
+					pass
+			elif event.type == KEYUP:
+				if self.VoltageInputBox.handleKeyEvent(event):
+					voltage_range = int(''.join(self.VoltageInputBox.inputtext))
+				if self.ResistanceInputBox.handleKeyEvent(event):
+					resistance_range = int(''.join(self.ResistanceInputBox.inputtext))
 	
 	def openI2C(self):
 		global f_handler, I2C_SLAVE, address
